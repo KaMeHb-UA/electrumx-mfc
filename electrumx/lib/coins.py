@@ -3329,10 +3329,17 @@ class MFCoin(NameMixin, Coin):
     DESERIALIZER = lib_tx.DeserializerMFCoin
 
     @classmethod
+    def is_pos(cls, header):
+        if header[84:115].hex()=="00000000000000000000000000000000000000000000000000000000000000":
+            return True
+        return False
+
+    @classmethod
     def block(cls, raw_block, height):
         '''Return a Block namedtuple given a raw block and its height.'''
         header = cls.block_header(raw_block, height)
-        if height == 0 or len(raw_block) < cls.MFC_HEADER_EXTRA_SIZE:
+        #if height == 0 or len(raw_block) < cls.MFC_HEADER_EXTRA_SIZE:
+        if height == 0 or cls.is_pos(header):
             offset = 0
         else:
             offset = cls.MFC_HEADER_EXTRA_SIZE
